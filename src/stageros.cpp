@@ -50,6 +50,8 @@
 #include <geometry_msgs/Twist.h>
 #include <rosgraph_msgs/Clock.h>
 
+#include <stage_ros/Stall.h>
+
 #include <std_srvs/Empty.h>
 
 #include "tf/transform_broadcaster.h"
@@ -85,6 +87,7 @@ private:
   struct Position
   {
     StageNode* node; // this
+    ros::Publisher stall_pub;
     ros::Publisher odom_pub;
     ros::Publisher ground_truth_pub;
     ros::Subscriber cmdvel_sub; 
@@ -215,6 +218,7 @@ StageNode::ImportModel(Stg::Model* mod )
       assert(p);
       p->node = this;
 
+      p->stall_pub = n_.advertise<stage_ros::Stall>("stalled_robots", 10);
       p->odom_pub = n_.advertise<nav_msgs::Odometry>(mapName(ODOM, mp), 10);
       p->ground_truth_pub = n_.advertise<nav_msgs::Odometry>(mapName(BASE_POSE_GROUND_TRUTH, mp), 10);
       p->cmdvel_sub = n_.subscribe<geometry_msgs::Twist>(mapName(CMD_VEL, mp), 10, boost::bind(&StageNode::cmdvelReceived, this, position_model_idx
@@ -424,6 +428,17 @@ void StageNode::PositionCallback( Stg::ModelPosition* mod, Position* p )
   //@todo Publish stall on a separate topic when one becomes available
   //this->odomMsgs[r].stall = this->positionmodels[r]->Stall();
   //
+  stage_ros::Stall stall_msg;
+  stall_msg.header.frame_id = mapName("base_link", mod);
+  stall_msg.header.stamp = sim_time;
+  for (size_t r = 0; r < this->positionmodels.size(); r++) {
+    if (this->positionmodels[r]->Stalled()) {
+      // std::cout<<"Robot '"<<r<<"'is Stall!!!!!"<<std::endl;
+      stall_msg.stalled_robot_num.push_back(r);
+    }
+  }
+  p->stall_pub.publish(stall_msg);
+
   odom_msg.header.frame_id = mapName("odom", mod);
   odom_msg.header.stamp = sim_time;
   

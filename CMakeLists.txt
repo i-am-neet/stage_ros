@@ -10,6 +10,7 @@ find_package(catkin REQUIRED
     std_msgs
     std_srvs
     tf
+    message_generation
 )
 
 find_package(Boost REQUIRED COMPONENTS system thread)
@@ -22,7 +23,19 @@ include_directories(
   ${STAGE_INCLUDE_DIRS}
 )
 
-catkin_package()
+add_message_files(
+  FILES
+  Stall.msg
+)
+
+generate_messages(
+  DEPENDENCIES
+  std_msgs
+)
+
+catkin_package(
+  CATKIN_DEPENDS message_runtime
+)
 
 # Declare a cpp executable
 add_executable(stageros src/stageros.cpp)
