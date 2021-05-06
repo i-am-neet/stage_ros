@@ -1,2 +1,2 @@
 Header header
-int32[] stalled_robot_num
+int32[] stalled_robots_num

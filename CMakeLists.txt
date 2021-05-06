@@ -10,7 +10,6 @@ find_package(catkin REQUIRED
     std_msgs
     std_srvs
     tf
-    message_generation
 )
 
 find_package(Boost REQUIRED COMPONENTS system thread)
@@ -75,5 +74,5 @@ install(DIRECTORY world
 if(CATKIN_ENABLE_TESTING)
   find_package(rostest REQUIRED)
   add_rostest(test/hztest.xml)
-  add_rostest(test/intensity_test.xml)
+  add_rostest(test/cmdpose_tests.xml)
 endif()

@@ -6,25 +6,26 @@ define block model
 
 define topurg ranger
 (
-	sensor( 			
-    range [ 0.0  30.0 ]
-    fov 270.25
-   samples 1081
+  sensor(
+    range [ 0.02 5.60 ]
+    fov 240.00
+    samples 660
   )
-
   # generic model properties
   color "black"
   size [ 0.05 0.05 0.1 ]
 )
 
-define erratic position
+define pr2 position
 (
-  #size [0.415 0.392 0.25]
-  size [0.35 0.35 0.25]
-  origin [-0.05 0 0 0]
+  size [0.455 0.381 0.237]
+  origin [0 0 0 0]
   gui_nose 1
-  drive "diff"
-  topurg(pose [ 0.050 0.000 0 0.000 ])
+  drive "omni"
+  topurg(pose [ 0.1 0 0.287 0 ])
+  velocity_bounds [-100 100 -100 100 -100 100 -90 90 ]
+  acceleration_bounds [-1 1 -1 1 -1 1 -90 90]
+  
 )
 
 define floorplan model
@@ -41,20 +42,20 @@ define floorplan model
   gui_outline 0
   gripper_return 0
   fiducial_return 0
-  laser_return 1
+  ranger_return 1
 )
 
 # set the resolution of the underlying raytrace model in meters
 resolution 0.02
 
 interval_sim 100  # simulation timestep in milliseconds
-
+speedup 3
 
 window
 ( 
   size [ 745.000 448.000 ] 
 
-  rotate [ 0.000 -1.560 ]
+  rotate [ 0.000 0.000 ]
   scale 28.806 
 )
 
@@ -62,11 +63,10 @@ window
 floorplan
 ( 
   name "willow"
-  bitmap "willow-full.pgm"
-  size [54.0 58.7 0.5]
-  pose [ -29.350 27.000 0 90.000 ]
+  bitmap "./Obstacles.jpg"
+  size [8.0 8.0 1.0]
+  pose [ 0.000 0.000 0 00.000 ]
 )
 
 # throw in a robot
-erratic( pose [ -11.277 23.266 0 180.000 ] name "era" color "blue")
-block( pose [ -13.924 25.020 0 180.000 ] color "red")
+pr2( pose [ 0.000 0.000 0 00.000 ] name "pr2" color "blue")
